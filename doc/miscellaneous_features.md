@@ -190,6 +190,130 @@ Keyboard shortcut               | Description
 <kbd>n</kbd>                    | Go to next line.
 <kbd>p</kbd>                    | Go to previous line.
 
+## REPL input history browser
+
+You can browse your REPL input history with the command <kbd>M-x</kbd>
+`cider-repl-history`.  It is also bound in `cider-repl-mode` buffers to
+<kbd>C-c M-p</kbd>, and is also available via the `history` shortcut.
+
+The history is displayed in order, with the most recent input at the top of the
+buffer, and the oldest one at the bottom.  You can scroll through the history,
+and when you find the history item you were looking for, you can insert it from
+the history buffer into your REPL buffer.
+
+![History Browser](images/history_browser.png)
+
+### Mode
+
+The history buffer has its own major mode, `cider-history-mode` which is derived
+from `clojure-mode`, so you get fontification in the history buffer. It supports
+the expected defcustom hook variable, `cider-history-hook`.
+
+### Insertion
+
+Typically your cursor will be at the bottom of the REPL buffer (`point-max`)
+when you use this feature; if that's the case, the text is inserted, and point
+is advanced to the end of the inserted text. In the unusual case where you
+invoke the history browser when your cursor is _not_ at the end of the buffer,
+the text is _still_ inserted at point-max, but point is not modified.
+
+The text is inserted without a final newline, meaning you can edit the form
+if you wish, and you must explicitly hit <kbd>Enter</kbd> to have it evaluated
+by the REPL.
+
+### Quitting
+
+After text is inserted, the history buffer is automatically quit. If you decide
+you don't want to insert any text after all, you can explicitly quit by running
+`cider-history-quit` (see keyboard shortcuts).  Due to the initialization and
+cleanup done, it is better to properly quit, rather than just switch away from
+the history buffer.
+
+When you quit the history buffer, there are several different ways for the
+buffers and windows to be restored. This is controlled by the custom variable
+`cider-history-quit-action`, which can be assigned one of several values:
+
+- `quit-window` restores the window configuration to what it was before.
+  This is the default.
+- `delete-and-restore` restores the window configuration to what it was before,
+  and kills the `*cider-repl-history*` buffer.
+- `kill-and-delete-window` kills the `*cider-repl-history*` buffer, and 
+  deletes the window.
+- `bury-buffer` simply buries the `*cider-repl-history*` buffer, but keeps the
+  window.
+- `bury-and-delete-window` buries the buffer, and (if there is more than one
+  window) deletes the window.
+- any other value is interpreted as the name of a function to call
+
+### Filtering
+
+By invoking `cider-history-occur` from the history buffer, you will be prompted
+for a regular expression, and the history buffer will be filtered to only those
+inputs that match the regexp.
+
+### Preview
+
+When `cider-history-show-preview` is non-nil, we display an [`overlay`]
+(https://www.gnu.org/software/emacs/manual/html_node/elisp/Overlays.html)
+of the currently selected history entry, in the REPL buffer.
+
+This is a nice feature; the only thing to be careful of is that if you do not
+properly quit from browsing the history (i.e., if you just <kbd>C-x b</kbd>
+away from the buffer), you may be left with an unwanted overlay in your REPL
+buffer. It can be eliminated with <kbd>M-x</kbd> `cider-history-clear-preview`.
+
+By default, the variable is nil and the feature is off.
+
+### Customization
+
+There are quite a few customizations available, in addition to the ones
+alreaady mentioned.
+
+- `cider-history-display-duplicates` - when set to `nil`, will not display any
+  duplicate entries in the history buffer.  Default is `t`.
+- `cider-history-display-style` - the history entries will often be more than
+   one line. The package gives you two options for displaying the entries:
+    - `separated` - a separator string is inserted between entries; entries
+      may span multiple lines.  This is the default.
+    - `one-line` - any newlines are replaced with literal `\n` strings, and
+      therefore no separator is necessary. Each `\n` becomes a proper newline
+      when the text is inserted into the REPL.
+- `cider-history-separator` - when `cider-history-display-style` is `separated`,
+  this gives the text to use as the separator. The default is a series of ten
+  semicolons, which is, of course, a comment in Clojure. The separator could be
+  anything, but it may screw up the fontification if you make it something weird.
+- `cider-history-separator-face` - specifies the face for the separator
+- `cider-history-maximum-display-length` - when nil (the default), all history
+  items are displayed in full. If you prefer to have long items abbreviated,
+  you can set this variable to an integer, and each item will be limited to that
+  many characters. (This variable does not affect the number of items displayed,
+  only the maximum length of each item.)
+- `cider-history-recenter`
+- `cider-history-highlight-inserted-item`
+- `cider-history-inserted-item-face`
+- `cider-history-highlight-current-entry`
+- `cider-history-current-entry-face`
+- `cider-history-display-leftmost-duplicate t`
+- `cider-history-resize-window`
+- `cider-history-inserted-item-face`
+- `cider-history-text-properties` - when set to `t`, maintains Emacs text
+  properties on the entry. Default is `nil`.
+
+### Key Bindings
+
+There are a number of important keybindings in history buffers.
+
+Keyboard shortcut                | Description
+---------------------------------|-------------------------------
+<kbd>n</kbd>                     | Go to next (lower, older) item in the history.
+<kbd>p</kbd>                     | Go to previous (higher, more recent) item in the history.
+<kbd>RET</kbd> or <kbd>SPC</kbd> | Insert history item (at point) at the end of the REPL buffer, and quit.
+<kbd>l</kbd> (lower-case L)      | Filter the command history (see **Filtering**, above).
+<kbd>s</kbd>                     | Regexp search forward.
+<kbd>r</kbd>                     | Regexp search backward.
+<kbd>q</kbd>                     | Quit (and take quit action).
+<kbd>U</kbd>                     | Undo in the REPL buffer.
+
 ## Documentation buffers include "See Also" references
 
 You can add references to other vars by including their names in `` ` `` in the docstring.
