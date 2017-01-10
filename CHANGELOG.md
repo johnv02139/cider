@@ -4,6 +4,10 @@
 
 @clojure-emacs has made a firm decision not to support emacsen less than 24.4
 
+### New Features
+
+* [#1860](https://github.com/clojure-emacs/cider/issues/1860): Add `cider-repl-history` to browse the REPL input history and insert elements from it into the REPL buffer.
+
 ## 0.14.0 (2016-10-13)
 
 ### New Features
