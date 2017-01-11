@@ -1,6 +1,8 @@
 # Changelog
 
-## master (unreleased)
+## 0.14.1 (will not be released)
+
+@clojure-emacs has made a firm decision not to support emacsen less than 24.4
 
 ## 0.14.0 (2016-10-13)
 
