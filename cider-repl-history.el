@@ -325,8 +325,22 @@ it's turned on."
         (overlay-put cider-repl-history-preview-overlay
                      'invisible t)))))
 
+;; The "pulse" functionality, part of cedet, was once an optional downloaded
+;; package.  Any remotely recent version includes cedet by default, but check
+;; just in case, and adjust if it's not found.
+(defun cider-repl-history-adjust-insert ()
+  "If we want `pulse', try to load the library, and change highlight-style if unsuccessful."
+  (when (or (eq cider-repl-history-highlight-inserted-item 'pulse)
+            (eq cider-repl-history-highlight-inserted-item 't))
+    (unless (and (require 'pulse nil t)
+                 (fboundp 'pulse-momentary-highlight-region))
+      (warn "Unable to load `pulse' library")
+      (setq cider-repl-history-highlight-inserted-item 'solid))))
+
 (defun cider-repl-history-highlight-inserted (start end)
   "Insert the text between START and END."
+  (when cider-repl-history-highlight-inserted-item
+    (cider-repl-history-adjust-insert))
   (pcase cider-repl-history-highlight-inserted-item
     ((or `pulse `t)
      (let ((pulse-delay .05) (pulse-iterations 10))
