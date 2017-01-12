@@ -727,4 +727,36 @@ text from the *cider-repl-history* buffer."
 
 (provide 'cider-repl-history)
 
+;; buffer-quit-function (a standard hook)
+
+(defun cider-repl-history-cedet ()
+  (when cider-repl-history-highlight-inserted-item
+    ;; First, load the `pulse' library if needed.
+    (when (or (eq cider-repl-history-highlight-inserted-item 'pulse)
+              (eq cider-repl-history-highlight-inserted-item 't))
+      (unless (and (require 'pulse nil t)
+                   (fboundp 'pulse-momentary-highlight-region))
+        (warn "Unable to load `pulse' library")
+        (setq cider-repl-history-highlight-inserted-item 'solid)))))
+
+(defun cider-repl-history-switch-to-buffer (buffer-or-name)
+  "Display buffer BUFFER-OR-NAME in the selected window, cleaning up *cider-repl-history* first."
+  (interactive
+   (list (read-buffer-to-switch "Switch to buffer: ")))
+  (cider-repl-history-cleanup-on-exit)
+  (switch-to-buffer buffer-or-name))
+
+(define-key cider-repl-history-mode-map (kbd "C-x b") 'cider-repl-history-switch-to-buffer)
+
+(defun cider-repl-history-maybe-update ()
+  "Update the history buffer to reflect the latest state of the command history."
+  (interactive)
+  (when (eq major-mode 'cider-repl-history-mode)
+    (save-excursion
+      (cider-repl-history-setup cider-repl-history-repl-window
+                           cider-repl-history-repl-buffer
+                           (current-buffer)))))
+
+(add-hook 'window-configuration-change-hook 'cider-repl-history-maybe-update)
+
 ;;; cider-repl-history.el ends here
