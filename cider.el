@@ -233,8 +233,9 @@ Sub-match 1 must be the project path.")
     (_ (user-error "Unsupported project type `%s'" project-type))))
 
 (defun cider-jack-in-resolve-command (project-type)
-  "Determine the resolved file path to `cider-jack-in-command' if it can be
-found for the PROJECT-TYPE"
+  "Determine the resolved file path to `cider-jack-in-command'.
+Throws an error if PROJECT-TYPE is unknown.  Known types are
+\"lein\", \"boot\", and \"gradle\"."
   (pcase project-type
     ("lein" (cider--lein-resolve-command))
     ("boot" (cider--boot-resolve-command))
@@ -705,7 +706,7 @@ choose."
 
 ;; TODO: Implement a check for `cider-lein-command' over tramp
 (defun cider--lein-resolve-command ()
-  "Find `cider-lein-command' on `exec-path' if possible, or return `nil'.
+  "Find `cider-lein-command' on `exec-path' if possible, or return nil.
 
 In case `default-directory' is non-local we assume the command is available."
   (when-let ((command (or (and (file-remote-p default-directory) cider-lein-command)
@@ -715,7 +716,7 @@ In case `default-directory' is non-local we assume the command is available."
 
 ;; TODO: Implement a check for `cider-boot-command' over tramp
 (defun cider--boot-resolve-command ()
-  "Find `cider-boot-command' on `exec-path' if possible, or return `nil'.
+  "Find `cider-boot-command' on `exec-path' if possible, or return nil.
 
 In case `default-directory' is non-local we assume the command is available."
   (when-let ((command (or (and (file-remote-p default-directory) cider-boot-command)
@@ -725,7 +726,7 @@ In case `default-directory' is non-local we assume the command is available."
 
 ;; TODO: Implement a check for `cider-gradle-command' over tramp
 (defun cider--gradle-resolve-command ()
-  "Find `cider-gradle-command' on `exec-path' if possible, or return `nil'.
+  "Find `cider-gradle-command' on `exec-path' if possible, or return nil.
 
 In case `default-directory' is non-local we assume the command is available."
   (when-let ((command (or (and (file-remote-p default-directory) cider-gradle-command)
