@@ -35,6 +35,7 @@
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent map cider-popup-buffer-mode-map)
     (define-key map (kbd "RET") #'cider-classpath-operate-on-point)
+    (define-key map "f" #'cider-classpath-operate-on-point-same-window)
     (define-key map "n" #'next-line)
     (define-key map "p" #'previous-line)
     map))
@@ -81,6 +82,14 @@
          (line (buffer-substring-no-properties bol eol)))
     (find-file-other-window line)))
 
+(defun cider-classpath-operate-on-point-same-window ()
+  "Expand browser according to thing at current point."
+  (interactive)
+  (let* ((bol (line-beginning-position))
+         (eol (line-end-position))
+         (line (buffer-substring-no-properties bol eol)))
+    (find-file line)))
+
 (defun cider-classpath-handle-mouse (event)
   "Handle mouse click EVENT."
   (interactive "e")
@@ -106,6 +115,14 @@
   (cider-ensure-op-supported "classpath")
   (when-let* ((entry (completing-read "Classpath entries: " (cider-sync-request:classpath))))
     (find-file-other-window entry)))
+
+(defun cider-open-classpath-entry-same-window ()
+  "Open a classpath entry in the same window."
+  (interactive)
+  (cider-ensure-connected)
+  (cider-ensure-op-supported "classpath")
+  (when-let ((entry (completing-read "Classpath entries: " (cider-sync-request:classpath))))
+    (find-file entry)))
 
 (provide 'cider-classpath)
 
