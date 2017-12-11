@@ -205,11 +205,11 @@ Currently, this is only used to keep `cider-repl-type' updated."
               ;; Metadata changed, so signatures may have changed too.
               (setq cider-eldoc-last-symbol nil)
               (when (or cider-mode (derived-mode-p 'cider-repl-mode))
-                (when-let ((ns-dict (or (nrepl-dict-get changed-namespaces (cider-current-ns))
-                                        (let ((ns-dict (cider-resolve--get-in (cider-current-ns))))
-                                          (when (seq-find (lambda (ns) (nrepl-dict-get changed-namespaces ns))
-                                                          (nrepl-dict-get ns-dict "aliases"))
-                                            ns-dict)))))
+                (when-let* ((ns-dict (or (nrepl-dict-get changed-namespaces (cider-current-ns))
+                                         (let ((ns-dict (cider-resolve--get-in (cider-current-ns))))
+                                           (when (seq-find (lambda (ns) (nrepl-dict-get changed-namespaces ns))
+                                                           (nrepl-dict-get ns-dict "aliases"))
+                                             ns-dict)))))
                   (cider-refresh-dynamic-font-lock ns-dict))))))))))
 
 (declare-function cider-default-err-handler "cider-interaction")
@@ -791,7 +791,7 @@ text property `cider-old-input'."
 (defun cider-repl-switch-to-other ()
   "Switch between the Clojure and ClojureScript REPLs for the current project."
   (interactive)
-  (if-let (other-connection (cider-other-connection))
+  (if-let* (other-connection (cider-other-connection))
       (switch-to-buffer other-connection)
     (message "There's no other REPL for the current project")))
 

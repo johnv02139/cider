@@ -54,7 +54,7 @@
 
 (defun cider-grimoire-web-lookup (symbol)
   "Open the grimoire documentation for SYMBOL in a web browser."
-  (if-let ((var-info (cider-var-info symbol)))
+  (if-let* ((var-info (cider-var-info symbol)))
       (let ((name (nrepl-dict-get var-info "name"))
             (ns (nrepl-dict-get var-info "ns")))
         (browse-url (cider-grimoire-url name ns)))
@@ -83,7 +83,7 @@ opposite of what that option dictates."
 
 (defun cider-grimoire-lookup (symbol)
   "Look up the grimoire documentation for SYMBOL."
-  (if-let ((var-info (cider-var-info symbol)))
+  (if-let* ((var-info (cider-var-info symbol)))
       (let ((name (nrepl-dict-get var-info "name"))
             (ns (nrepl-dict-get var-info "ns"))
             (url-request-method "GET")
