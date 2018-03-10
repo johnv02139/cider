@@ -420,7 +420,7 @@ text is still inserted at the end."
   "Clear the highlighted entry, when one exists."
   (when cider-repl-history-previous-overlay
     (cl-assert (overlayp cider-repl-history-previous-overlay)
-               nil "not an overlay")
+               t "not an overlay")
     (overlay-put cider-repl-history-previous-overlay 'face nil)))
 
 (defun cider-repl-history-update-highlighed-entry ()
@@ -721,6 +721,7 @@ text from the *cider-repl-history* buffer."
   (let* ((repl-win (selected-window))
          (repl-buf (window-buffer repl-win))
          (buf (get-buffer-create cider-repl-history-buffer)))
+    ;; (assert (equal repl-buf (cider-current-repl-buffer)))
     (cider-repl-history-setup repl-win repl-buf buf)
     (pop-to-buffer buf)
     (cider-repl-history-resize-window)))
